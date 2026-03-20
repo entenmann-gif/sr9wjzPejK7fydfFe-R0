@@ -16,6 +16,31 @@ const saveAccounts = (accounts) => {
   localStorage.setItem('dailyRiddleAccounts', JSON.stringify(accounts));
 };
 
+const loadRemoteAccount = async (accountKey) => {
+  if (!window.accountStore?.enabled) {
+    return null;
+  }
+
+  try {
+    return await window.accountStore.getAccount(accountKey);
+  } catch (error) {
+    console.warn('Supabase konnte beim Laden nicht erreicht werden.', error);
+    return null;
+  }
+};
+
+const saveRemoteAccount = async (accountKey, account) => {
+  if (!window.accountStore?.enabled) {
+    return;
+  }
+
+  try {
+    await window.accountStore.saveAccount(accountKey, account);
+  } catch (error) {
+    console.warn('Supabase konnte beim Speichern nicht erreicht werden.', error);
+  }
+};
+
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
 // HIER KANNST DU DAS RÄTSEL UND DIE LÖSUNG IM CODE ÄNDERN.
@@ -38,9 +63,23 @@ if (!activeAccount) {
     riddleQuestion.textContent = DAILY_RIDDLE.question;
   };
 
-  renderAccount();
+  const hydrateFromSupabase = async () => {
+    const remoteAccount = await loadRemoteAccount(ACTIVE_ACCOUNT_KEY);
 
-  riddleForm?.addEventListener('submit', (event) => {
+    if (!remoteAccount) {
+      return;
+    }
+
+    Object.assign(activeAccount, remoteAccount);
+    accounts[ACTIVE_ACCOUNT_KEY] = activeAccount;
+    saveAccounts(accounts);
+    renderAccount();
+  };
+
+  renderAccount();
+  hydrateFromSupabase();
+
+  riddleForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const answer = document.getElementById('riddle-answer').value.trim();
@@ -60,7 +99,9 @@ if (!activeAccount) {
     activeAccount.points += DAILY_RIDDLE.rewardPoints;
     activeAccount.lastSolvedDate = todayKey();
     accounts[ACTIVE_ACCOUNT_KEY] = activeAccount;
+
     saveAccounts(accounts);
+    await saveRemoteAccount(ACTIVE_ACCOUNT_KEY, activeAccount);
     renderAccount();
 
     riddleMessage.textContent = `Richtig! Du bekommst ${DAILY_RIDDLE.rewardPoints} Punkte für das heutige Rätsel.`;
