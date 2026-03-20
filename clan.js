@@ -6,27 +6,21 @@ const clanMembersList = document.getElementById('clan-members-list');
 
 const normalizeValue = (value) => value.trim().toLowerCase();
 
-const loadAccounts = () => {
-  const raw = localStorage.getItem('dailyRiddleAccounts');
-  return raw ? JSON.parse(raw) : {};
+const loadRemoteAccount = async (accountKey) => {
+  if (!window.accountStore?.enabled || !accountKey) {
+    return null;
+  }
+
+  return window.accountStore.getAccount(accountKey);
 };
 
 const loadRemoteAccountsByClan = async (clan) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !clan) {
     return [];
   }
 
-  try {
-    return await window.accountStore.findAccountsByClan(clan);
-  } catch (error) {
-    console.warn('Supabase konnte Clan-Mitglieder nicht laden.', error);
-    return [];
-  }
+  return window.accountStore.findAccountsByClan(clan);
 };
-
-const findLocalAccountsByClan = (accounts, clan) => Object.entries(accounts)
-  .filter(([, account]) => normalizeValue(account.clan) === normalizeValue(clan))
-  .map(([accountKey, account]) => ({ ...account, accountKey }));
 
 const mergeClanMembers = (members) => {
   const merged = new Map();
@@ -71,31 +65,42 @@ const renderClanMembers = (members) => {
 };
 
 const initializeClanPage = async () => {
-  const accounts = loadAccounts();
-  const activeAccount = ACTIVE_ACCOUNT_KEY ? accounts[ACTIVE_ACCOUNT_KEY] : null;
-
-  if (!activeAccount) {
+  if (!ACTIVE_ACCOUNT_KEY || !window.accountStore?.enabled) {
     window.location.href = 'index.html';
     return;
   }
 
-  clanTitle.textContent = activeAccount.clan;
-  clanMessage.textContent = '';
+  try {
+    const activeAccount = await loadRemoteAccount(ACTIVE_ACCOUNT_KEY);
 
-  const localMembers = findLocalAccountsByClan(accounts, activeAccount.clan);
-  const remoteMembers = await loadRemoteAccountsByClan(activeAccount.clan);
-  const clanMembers = mergeClanMembers([...localMembers, ...remoteMembers, activeAccount]);
+    if (!activeAccount) {
+      sessionStorage.removeItem('activeAccountKey');
+      window.location.href = 'index.html';
+      return;
+    }
 
-  renderClanMembers(clanMembers);
+    activeAccount.accountKey = ACTIVE_ACCOUNT_KEY;
 
-  if (clanMembers.length === 0) {
-    clanMessage.textContent = 'Es wurden noch keine Mitglieder für deinen Clan gefunden.';
-    clanMessage.className = 'message error';
-    return;
+    clanTitle.textContent = activeAccount.clan;
+    clanMessage.textContent = '';
+
+    const remoteMembers = await loadRemoteAccountsByClan(activeAccount.clan);
+    const clanMembers = mergeClanMembers([...remoteMembers, activeAccount]);
+
+    renderClanMembers(clanMembers);
+
+    if (clanMembers.length === 0) {
+      clanMessage.textContent = 'Es wurden noch keine Mitglieder für deinen Clan gefunden.';
+      clanMessage.className = 'message error';
+      return;
+    }
+
+    clanMessage.textContent = `${clanMembers.length} Personen in deinem Clan.`;
+    clanMessage.className = 'message success';
+  } catch (error) {
+    console.error('Clan-Seite konnte Supabase-Daten nicht laden.', error);
+    window.location.href = 'index.html';
   }
-
-  clanMessage.textContent = `${clanMembers.length} Personen in deinem Clan.`;
-  clanMessage.className = 'message success';
 };
 
 initializeClanPage();

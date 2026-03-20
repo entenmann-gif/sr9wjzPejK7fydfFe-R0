@@ -4,7 +4,11 @@ const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY ?? '';
 const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const hasSupabaseLib = Boolean(window.supabase?.createClient);
 
-const supabaseClient = hasSupabaseConfig && hasSupabaseLib
+const accountStoreReason = !hasSupabaseConfig
+  ? 'missing_config'
+  : (!hasSupabaseLib ? 'missing_library' : 'ok');
+
+const supabaseClient = accountStoreReason === 'ok'
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
@@ -28,6 +32,7 @@ const mapAccountToRow = (accountKey, account) => ({
 
 window.accountStore = {
   enabled: Boolean(supabaseClient),
+  reason: accountStoreReason,
 
   async getAccount(accountKey) {
     if (!supabaseClient || !accountKey) {
