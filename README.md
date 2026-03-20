@@ -31,10 +31,18 @@ create table if not exists public.daily_riddle_accounts (
 );
 ```
 
-2. `supabase-config.js` ausfüllen:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
+2. Supabase-Zugangsdaten beim Deployment als globale Variablen bereitstellen:
+   - `window.SUPABASE_URL`
+   - `window.SUPABASE_ANON_KEY`
+
+   Beispiel:
+   ```html
+   <script>
+     window.SUPABASE_URL = "https://DEIN-PROJEKT.supabase.co";
+     window.SUPABASE_ANON_KEY = "DEIN-ANON-KEY";
+   </script>
+   ```
 
 3. Optional: Für öffentlichen Zugriff passende RLS-Policies konfigurieren (oder in einem geschützten Setup arbeiten).
 
-Wenn keine Supabase-Daten eingetragen sind, läuft die App automatisch nur mit Local Storage.
+Ohne gültige Supabase-Daten ist kein Login möglich (kein Local-Storage-Fallback).
