@@ -63,8 +63,8 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 
 // HIER KANNST DU DAS RÄTSEL UND DIE LÖSUNG IM CODE ÄNDERN.
 const DAILY_RIDDLE = {
-  question: '1+1',
-  answer: '2',
+  question: 'was ist au 79?',
+  answer: 'gold',
   rewardPoints: 100,
 };
 
@@ -182,7 +182,7 @@ if (!activeAccount) {
       return;
     }
 
-    if (answer !== DAILY_RIDDLE.answer) {
+    if (normalizeValue(answer) !== normalizeValue(DAILY_RIDDLE.answer)) {
       riddleMessage.textContent = 'Leider falsch. Versuch es noch einmal.';
       riddleMessage.className = 'message error';
       return;
