@@ -63,8 +63,8 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 
 // HIER KANNST DU DAS RÄTSEL UND DIE LÖSUNG IM CODE ÄNDERN.
 const DAILY_RIDDLE = {
-  question: '1 + 1',
-  answer: '2',
+  question: `was ist Au 79',
+  answer: 'gold',
   rewardPoints: 100,
 };
 
