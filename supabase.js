@@ -9,6 +9,7 @@ const supabaseClient = hasSupabaseConfig && hasSupabaseLib
   : null;
 
 const mapRowToAccount = (row) => ({
+  accountKey: row.account_key,
   name: row.name,
   clan: row.clan,
   points: row.points ?? 0,
@@ -46,6 +47,24 @@ window.accountStore = {
     return data ? mapRowToAccount(data) : null;
   },
 
+  async findAccountsByIdentity(name, clan) {
+    if (!supabaseClient || !name || !clan) {
+      return [];
+    }
+
+    const { data, error } = await supabaseClient
+      .from('daily_riddle_accounts')
+      .select('*')
+      .eq('name', name)
+      .eq('clan', clan);
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []).map(mapRowToAccount);
+  },
+
   async saveAccount(accountKey, account) {
     if (!supabaseClient || !accountKey) {
       return;
@@ -55,6 +74,21 @@ window.accountStore = {
     const { error } = await supabaseClient
       .from('daily_riddle_accounts')
       .upsert(payload, { onConflict: 'account_key' });
+
+    if (error) {
+      throw error;
+    }
+  },
+
+  async deleteAccount(accountKey) {
+    if (!supabaseClient || !accountKey) {
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from('daily_riddle_accounts')
+      .delete()
+      .eq('account_key', accountKey);
 
     if (error) {
       throw error;
