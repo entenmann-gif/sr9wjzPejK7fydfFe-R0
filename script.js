@@ -63,8 +63,14 @@ loginForm?.addEventListener('submit', async (event) => {
     return;
   }
 
-  if (!window.accountStore?.enabled) {
-    const reason = window.accountStore?.reason;
+  if (!window.accountStore) {
+    loginMessage.textContent = 'Supabase-Initialisierung fehlgeschlagen. Bitte Browser-Konsole prüfen.';
+    loginMessage.className = 'message error';
+    return;
+  }
+
+  if (!window.accountStore.enabled) {
+    const reason = window.accountStore.reason;
 
     if (reason === 'missing_config') {
       loginMessage.textContent = 'Supabase-Konfiguration fehlt. Bitte `supabase-config.js` ausfüllen.';

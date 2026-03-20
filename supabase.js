@@ -2,14 +2,14 @@ const windowSupabaseUrl = typeof window.SUPABASE_URL === 'string' ? window.SUPAB
 const windowSupabaseAnonKey = typeof window.SUPABASE_ANON_KEY === 'string' ? window.SUPABASE_ANON_KEY : '';
 
 // Fallback: unterstützt auch Konfigurationen, die SUPABASE_URL/SUPABASE_ANON_KEY
-// als globale Variablen (ohne window.-Prefix) deklarieren.
-const globalSupabaseUrl = typeof SUPABASE_URL === 'string' ? SUPABASE_URL : '';
-const globalSupabaseAnonKey = typeof SUPABASE_ANON_KEY === 'string' ? SUPABASE_ANON_KEY : '';
+// direkt auf globalThis setzen.
+const globalSupabaseUrl = typeof globalThis.SUPABASE_URL === 'string' ? globalThis.SUPABASE_URL : '';
+const globalSupabaseAnonKey = typeof globalThis.SUPABASE_ANON_KEY === 'string' ? globalThis.SUPABASE_ANON_KEY : '';
 
-const SUPABASE_URL = (windowSupabaseUrl || globalSupabaseUrl).trim();
-const SUPABASE_ANON_KEY = (windowSupabaseAnonKey || globalSupabaseAnonKey).trim();
+const resolvedSupabaseUrl = (windowSupabaseUrl || globalSupabaseUrl).trim();
+const resolvedSupabaseAnonKey = (windowSupabaseAnonKey || globalSupabaseAnonKey).trim();
 
-const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+const hasSupabaseConfig = Boolean(resolvedSupabaseUrl && resolvedSupabaseAnonKey);
 const hasSupabaseLib = Boolean(window.supabase?.createClient);
 
 const accountStoreReason = !hasSupabaseConfig
@@ -17,7 +17,7 @@ const accountStoreReason = !hasSupabaseConfig
   : (!hasSupabaseLib ? 'missing_library' : 'ok');
 
 const supabaseClient = accountStoreReason === 'ok'
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  ? window.supabase.createClient(resolvedSupabaseUrl, resolvedSupabaseAnonKey)
   : null;
 
 const mapRowToAccount = (row) => ({
