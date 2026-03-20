@@ -21,6 +21,10 @@ Die App speichert Accounts ausschließlich in Supabase (kein Local-Storage-Fallb
 > Hinweis: Die Datei liegt direkt im Projekt-Root als `supabase-config.js`.
 > Wenn sie fehlt: `cp supabase-config.example.js supabase-config.js`
 
+
+> Hinweis: Die Datei liegt direkt im Projekt-Root als `supabase-config.js`.
+> Wenn sie fehlt: `cp supabase-config.example.js supabase-config.js`
+
 1. In Supabase eine Tabelle `daily_riddle_accounts` anlegen:
 
 ```sql
