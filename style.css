@@ -29,7 +29,8 @@ main {
 }
 
 .auth-page,
-.dashboard-page {
+.dashboard-page,
+.clan-page {
   display: grid;
   gap: 24px;
   padding: 32px;
@@ -44,6 +45,10 @@ main {
   align-items: start;
 }
 
+.clan-page {
+  place-items: center;
+}
+
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -54,12 +59,18 @@ main {
 
 .auth-card,
 .riddle-card,
-.account-panel {
+.account-panel,
+.clan-card {
   padding: 32px;
 }
 
 .auth-card {
   max-width: 520px;
+}
+
+.clan-card {
+  max-width: 720px;
+  width: 100%;
 }
 
 .eyebrow {
@@ -172,7 +183,8 @@ input:focus {
   margin: 24px 0 32px;
 }
 
-.account-list div {
+.account-list div,
+.clan-summary {
   padding: 16px;
   border-radius: 18px;
   background: rgba(15, 23, 42, 0.75);
