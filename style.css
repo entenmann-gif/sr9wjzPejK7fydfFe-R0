@@ -201,35 +201,56 @@ input:focus {
   font-weight: 700;
 }
 
-.clan-link,
-.back-link {
-  color: #86efac;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.clan-link:hover,
-.back-link:hover {
-  text-decoration: underline;
-}
-
-.clan-overview {
-  margin: 24px 0;
-}
-
-.clan-summary {
+.clan-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.clan-trigger::after {
+  content: '▾';
+  color: #86efac;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.clan-trigger[aria-expanded='true']::after {
+  transform: rotate(180deg);
+}
+
+.clan-members-panel {
+  margin: -12px 0 24px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--border);
+}
+
+.clan-members-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 16px;
+  margin-bottom: 14px;
 }
 
-.clan-summary span {
+.clan-members-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.clan-members-count {
   color: var(--muted);
-}
-
-.clan-summary strong {
-  font-size: 1.4rem;
+  font-size: 0.95rem;
 }
 
 .clan-members-list {
@@ -252,6 +273,18 @@ input:focus {
 }
 
 .clan-member-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.clan-member-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
