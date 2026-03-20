@@ -65,6 +65,25 @@ window.accountStore = {
     return (data ?? []).map(mapRowToAccount);
   },
 
+  async findAccountsByClan(clan) {
+    if (!supabaseClient || !clan) {
+      return [];
+    }
+
+    const { data, error } = await supabaseClient
+      .from('daily_riddle_accounts')
+      .select('*')
+      .eq('clan', clan)
+      .order('points', { ascending: false })
+      .order('name', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []).map(mapRowToAccount);
+  },
+
   async saveAccount(accountKey, account) {
     if (!supabaseClient || !accountKey) {
       return;
