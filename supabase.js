@@ -1,5 +1,13 @@
-const SUPABASE_URL = window.SUPABASE_URL ?? '';
-const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY ?? '';
+const windowSupabaseUrl = typeof window.SUPABASE_URL === 'string' ? window.SUPABASE_URL : '';
+const windowSupabaseAnonKey = typeof window.SUPABASE_ANON_KEY === 'string' ? window.SUPABASE_ANON_KEY : '';
+
+// Fallback: unterstützt auch Konfigurationen, die SUPABASE_URL/SUPABASE_ANON_KEY
+// als globale Variablen (ohne window.-Prefix) deklarieren.
+const globalSupabaseUrl = typeof SUPABASE_URL === 'string' ? SUPABASE_URL : '';
+const globalSupabaseAnonKey = typeof SUPABASE_ANON_KEY === 'string' ? SUPABASE_ANON_KEY : '';
+
+const SUPABASE_URL = (windowSupabaseUrl || globalSupabaseUrl).trim();
+const SUPABASE_ANON_KEY = (windowSupabaseAnonKey || globalSupabaseAnonKey).trim();
 
 const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const hasSupabaseLib = Boolean(window.supabase?.createClient);
