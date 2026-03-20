@@ -14,7 +14,32 @@ const saveAccounts = (accounts) => {
   localStorage.setItem('dailyRiddleAccounts', JSON.stringify(accounts));
 };
 
-loginForm?.addEventListener('submit', (event) => {
+const loadRemoteAccount = async (accountKey) => {
+  if (!window.accountStore?.enabled) {
+    return null;
+  }
+
+  try {
+    return await window.accountStore.getAccount(accountKey);
+  } catch (error) {
+    console.warn('Supabase konnte beim Laden nicht erreicht werden.', error);
+    return null;
+  }
+};
+
+const saveRemoteAccount = async (accountKey, account) => {
+  if (!window.accountStore?.enabled) {
+    return;
+  }
+
+  try {
+    await window.accountStore.saveAccount(accountKey, account);
+  } catch (error) {
+    console.warn('Supabase konnte beim Speichern nicht erreicht werden.', error);
+  }
+};
+
+loginForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const name = document.getElementById('name').value.trim();
@@ -30,7 +55,9 @@ loginForm?.addEventListener('submit', (event) => {
 
   const accounts = loadAccounts();
   const accountKey = `${name.toLowerCase()}::${clan.toLowerCase()}`;
-  const existingAccount = accounts[accountKey] ?? {
+  const remoteAccount = await loadRemoteAccount(accountKey);
+
+  const existingAccount = remoteAccount ?? accounts[accountKey] ?? {
     name,
     clan,
     points: 0,
@@ -48,7 +75,9 @@ loginForm?.addEventListener('submit', (event) => {
   existingAccount.clan = clan;
   existingAccount.personalPassword = personalPassword;
   accounts[accountKey] = existingAccount;
+
   saveAccounts(accounts);
+  await saveRemoteAccount(accountKey, existingAccount);
 
   sessionStorage.setItem('activeAccountKey', accountKey);
   window.location.href = 'dashboard.html';
