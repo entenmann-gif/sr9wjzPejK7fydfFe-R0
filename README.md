@@ -15,7 +15,11 @@ Eine kleine statische Website mit Startscreen, Clan-Passwort-Login und Daily-Rid
 
 ## Supabase aktivieren
 
-Die App speichert weiterhin lokal im Browser, kann aber zusätzlich mit Supabase synchronisieren.
+Die App speichert Accounts ausschließlich in Supabase (kein Local-Storage-Fallback).
+
+
+> Hinweis: Die Datei liegt direkt im Projekt-Root als `supabase-config.js`.
+> Wenn sie fehlt: `cp supabase-config.example.js supabase-config.js`
 
 
 > Hinweis: Die Datei liegt direkt im Projekt-Root als `supabase-config.js`.

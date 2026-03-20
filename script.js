@@ -64,7 +64,16 @@ loginForm?.addEventListener('submit', async (event) => {
   }
 
   if (!window.accountStore?.enabled) {
-    loginMessage.textContent = 'Supabase ist nicht verbunden. Bitte Deployment-Konfiguration prüfen.';
+    const reason = window.accountStore?.reason;
+
+    if (reason === 'missing_config') {
+      loginMessage.textContent = 'Supabase-Konfiguration fehlt. Bitte `supabase-config.js` ausfüllen.';
+    } else if (reason === 'missing_library') {
+      loginMessage.textContent = 'Supabase-Bibliothek konnte nicht geladen werden. Bitte Internet/CDN prüfen.';
+    } else {
+      loginMessage.textContent = 'Supabase ist nicht verbunden. Bitte `supabase-config.js` prüfen.';
+    }
+
     loginMessage.className = 'message error';
     return;
   }
