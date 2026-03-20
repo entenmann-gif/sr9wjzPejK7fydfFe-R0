@@ -1,5 +1,7 @@
 const CLAN_PASSWORDS = {
   'dünnschiss': 'Chaos Crew',
+  megaking: 'kings lobby',
+  standartschiss: 'lila langweiler',
 };
 
 const loginForm = document.getElementById('login-form');
