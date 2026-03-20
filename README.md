@@ -10,7 +10,7 @@ Eine kleine statische Website mit Startscreen, Clan-Passwort-Login und Daily-Rid
    - `dünnschiss` → `Chaos Crew`
    - `megaking` → `kings lobby`
    - `standartschiss` → `lila langweiler`
-4. Einen eigenen Namen und ein eigenes Zugangspasswort verwenden; so können mehrere Personen demselben Clan beitreten.
+4. Ein eigenes Zugangspasswort festlegen (bei späteren Logins muss es wieder eingegeben werden).
 5. Auf dem Dashboard das tägliche Rätsel lösen und einmal pro Tag 100 Punkte erhalten.
 
 ## Supabase aktivieren
