@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Riddle Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="dashboard-page">
+      <section class="card riddle-card">
+        <p class="eyebrow">Challenge des Tages</p>
+        <h1>Daily Riddle</h1>
+        <p class="riddle-copy">
+          Löse das Rätsel des Tages. Wenn deine Antwort richtig ist, bekommst du heute 100 Punkte.
+        </p>
+
+        <div class="riddle-box">
+          <h2>Rätsel</h2>
+          <p id="riddle-question" class="riddle-question"></p>
+
+          <form id="riddle-form" class="form compact-form">
+            <label class="field">
+              <span>Deine Antwort</span>
+              <input id="riddle-answer" name="answer" type="text" placeholder="Antwort eingeben" required />
+            </label>
+            <button type="submit" class="button">Antwort prüfen</button>
+            <p id="riddle-message" class="message" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <aside class="card account-panel">
+        <p class="eyebrow">Dein Account</p>
+        <h2 id="account-name"></h2>
+        <dl class="account-list">
+          <div>
+            <dt>Clan</dt>
+            <dd id="account-clan"></dd>
+          </div>
+          <div>
+            <dt>Punkte</dt>
+            <dd id="account-points"></dd>
+          </div>
+        </dl>
+
+        <button id="logout-button" class="button secondary-button" type="button">Abmelden</button>
+      </aside>
+    </main>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>

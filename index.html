@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clan Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="auth-page">
+      <section class="card auth-card">
+        <p class="eyebrow">Clan Zugang</p>
+        <h1>Willkommen beim Daily Riddle</h1>
+        <p class="intro">
+          Gib deinen Namen und das Clan-Passwort ein. Mit dem richtigen Passwort wirst du automatisch dem passenden Clan zugeordnet.
+        </p>
+
+        <form id="login-form" class="form">
+          <label class="field">
+            <span>Name</span>
+            <input id="name" name="name" type="text" placeholder="Dein Name" required />
+          </label>
+
+          <label class="field">
+            <span>Passwort</span>
+            <input id="password" name="password" type="password" placeholder="Clan Passwort" required />
+          </label>
+
+          <button type="submit" class="button">Clan betreten</button>
+          <p id="login-message" class="message" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
