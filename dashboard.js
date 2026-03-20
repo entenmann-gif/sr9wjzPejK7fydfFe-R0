@@ -10,53 +10,30 @@ const clanMembersPanel = document.getElementById('clan-members-panel');
 const clanMembersList = document.getElementById('clan-members-list');
 const clanMembersCount = document.getElementById('clan-members-count');
 
-const loadAccounts = () => {
-  const raw = localStorage.getItem('dailyRiddleAccounts');
-  return raw ? JSON.parse(raw) : {};
-};
-
-const saveAccounts = (accounts) => {
-  localStorage.setItem('dailyRiddleAccounts', JSON.stringify(accounts));
-};
-
 const normalizeValue = (value) => value.trim().toLowerCase();
 
 const loadRemoteAccount = async (accountKey) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !accountKey) {
     return null;
   }
 
-  try {
-    return await window.accountStore.getAccount(accountKey);
-  } catch (error) {
-    console.warn('Supabase konnte beim Laden nicht erreicht werden.', error);
-    return null;
-  }
+  return window.accountStore.getAccount(accountKey);
 };
 
 const loadRemoteAccountsByClan = async (clan) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !clan) {
     return [];
   }
 
-  try {
-    return await window.accountStore.findAccountsByClan(clan);
-  } catch (error) {
-    console.warn('Supabase konnte Clan-Mitglieder nicht laden.', error);
-    return [];
-  }
+  return window.accountStore.findAccountsByClan(clan);
 };
 
 const saveRemoteAccount = async (accountKey, account) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !accountKey) {
     return;
   }
 
-  try {
-    await window.accountStore.saveAccount(accountKey, account);
-  } catch (error) {
-    console.warn('Supabase konnte beim Speichern nicht erreicht werden.', error);
-  }
+  await window.accountStore.saveAccount(accountKey, account);
 };
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -68,12 +45,7 @@ const DAILY_RIDDLE = {
   rewardPoints: 100,
 };
 
-const accounts = loadAccounts();
-const activeAccount = ACTIVE_ACCOUNT_KEY ? accounts[ACTIVE_ACCOUNT_KEY] : null;
-
-const findLocalAccountsByClan = (allAccounts, clan) => Object.entries(allAccounts)
-  .filter(([, account]) => normalizeValue(account.clan) === normalizeValue(clan))
-  .map(([accountKey, account]) => ({ ...account, accountKey }));
+let activeAccount = null;
 
 const mergeClanMembers = (members) => {
   const merged = new Map();
@@ -125,74 +97,85 @@ const renderClanMembers = (members) => {
 };
 
 const updateClanMembers = async () => {
-  const localMembers = findLocalAccountsByClan(loadAccounts(), activeAccount.clan);
   const remoteMembers = await loadRemoteAccountsByClan(activeAccount.clan);
-  const clanMembers = mergeClanMembers([...localMembers, ...remoteMembers, activeAccount]);
+  const clanMembers = mergeClanMembers([...remoteMembers, activeAccount]);
   renderClanMembers(clanMembers);
 };
 
-if (!activeAccount) {
-  window.location.href = 'index.html';
-} else {
-  const renderAccount = () => {
-    accountName.textContent = activeAccount.name;
-    accountClan.textContent = activeAccount.clan;
-    accountPoints.textContent = `${activeAccount.points} Punkte`;
-    riddleQuestion.textContent = DAILY_RIDDLE.question;
-  };
+const renderAccount = () => {
+  accountName.textContent = activeAccount.name;
+  accountClan.textContent = activeAccount.clan;
+  accountPoints.textContent = `${activeAccount.points} Punkte`;
+  riddleQuestion.textContent = DAILY_RIDDLE.question;
+};
 
-  const hydrateFromSupabase = async () => {
+const initializeDashboard = async () => {
+  if (!ACTIVE_ACCOUNT_KEY || !window.accountStore?.enabled) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
     const remoteAccount = await loadRemoteAccount(ACTIVE_ACCOUNT_KEY);
 
     if (!remoteAccount) {
+      sessionStorage.removeItem('activeAccountKey');
+      window.location.href = 'index.html';
       return;
     }
 
-    Object.assign(activeAccount, remoteAccount);
-    accounts[ACTIVE_ACCOUNT_KEY] = activeAccount;
-    saveAccounts(accounts);
+    activeAccount = { ...remoteAccount, accountKey: ACTIVE_ACCOUNT_KEY };
     renderAccount();
     await updateClanMembers();
-  };
+  } catch (error) {
+    console.error('Dashboard konnte Supabase-Daten nicht laden.', error);
+    window.location.href = 'index.html';
+  }
+};
 
-  renderAccount();
-  updateClanMembers();
-  hydrateFromSupabase();
+initializeDashboard();
 
-  accountClan?.addEventListener('click', async () => {
-    const isExpanded = accountClan.getAttribute('aria-expanded') === 'true';
-    const nextExpanded = !isExpanded;
+accountClan?.addEventListener('click', async () => {
+  if (!activeAccount) {
+    return;
+  }
 
-    accountClan.setAttribute('aria-expanded', String(nextExpanded));
-    clanMembersPanel.hidden = !nextExpanded;
+  const isExpanded = accountClan.getAttribute('aria-expanded') === 'true';
+  const nextExpanded = !isExpanded;
 
-    if (nextExpanded) {
-      await updateClanMembers();
-    }
-  });
+  accountClan.setAttribute('aria-expanded', String(nextExpanded));
+  clanMembersPanel.hidden = !nextExpanded;
 
-  riddleForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  if (nextExpanded) {
+    await updateClanMembers();
+  }
+});
 
-    const answer = document.getElementById('riddle-answer').value.trim();
+riddleForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-    if (activeAccount.lastSolvedDate === todayKey()) {
-      riddleMessage.textContent = 'Du hast das heutige Rätsel schon gelöst und deine 100 Punkte bereits bekommen.';
-      riddleMessage.className = 'message error';
-      return;
-    }
+  if (!activeAccount) {
+    return;
+  }
 
-    if (normalizeValue(answer) !== normalizeValue(DAILY_RIDDLE.answer)) {
-      riddleMessage.textContent = 'Leider falsch. Versuch es noch einmal.';
-      riddleMessage.className = 'message error';
-      return;
-    }
+  const answer = document.getElementById('riddle-answer').value.trim();
 
-    activeAccount.points += DAILY_RIDDLE.rewardPoints;
-    activeAccount.lastSolvedDate = todayKey();
-    accounts[ACTIVE_ACCOUNT_KEY] = activeAccount;
+  if (activeAccount.lastSolvedDate === todayKey()) {
+    riddleMessage.textContent = 'Du hast das heutige Rätsel schon gelöst und deine 100 Punkte bereits bekommen.';
+    riddleMessage.className = 'message error';
+    return;
+  }
 
-    saveAccounts(accounts);
+  if (normalizeValue(answer) !== normalizeValue(DAILY_RIDDLE.answer)) {
+    riddleMessage.textContent = 'Leider falsch. Versuch es noch einmal.';
+    riddleMessage.className = 'message error';
+    return;
+  }
+
+  activeAccount.points += DAILY_RIDDLE.rewardPoints;
+  activeAccount.lastSolvedDate = todayKey();
+
+  try {
     await saveRemoteAccount(ACTIVE_ACCOUNT_KEY, activeAccount);
     renderAccount();
     await updateClanMembers();
@@ -200,10 +183,14 @@ if (!activeAccount) {
     riddleMessage.textContent = `Richtig! Du bekommst ${DAILY_RIDDLE.rewardPoints} Punkte für das heutige Rätsel.`;
     riddleMessage.className = 'message success';
     riddleForm.reset();
-  });
+  } catch (error) {
+    console.error('Supabase konnte die Punkte nicht speichern.', error);
+    riddleMessage.textContent = 'Speichern in Supabase fehlgeschlagen. Bitte erneut versuchen.';
+    riddleMessage.className = 'message error';
+  }
+});
 
-  logoutButton?.addEventListener('click', () => {
-    sessionStorage.removeItem('activeAccountKey');
-    window.location.href = 'index.html';
-  });
-}
+logoutButton?.addEventListener('click', () => {
+  sessionStorage.removeItem('activeAccountKey');
+  window.location.href = 'index.html';
+});
