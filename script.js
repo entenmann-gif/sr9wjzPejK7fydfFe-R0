@@ -17,69 +17,37 @@ const buildLegacyAccountKey = (name, clan) => `${normalizeValue(name)}::${normal
 
 const buildAccountKey = (name, clan, personalPassword) => `${buildLegacyAccountKey(name, clan)}::${encodeURIComponent(personalPassword)}`;
 
-const loadAccounts = () => {
-  const raw = localStorage.getItem('dailyRiddleAccounts');
-  return raw ? JSON.parse(raw) : {};
-};
-
-const saveAccounts = (accounts) => {
-  localStorage.setItem('dailyRiddleAccounts', JSON.stringify(accounts));
-};
-
 const loadRemoteAccount = async (accountKey) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !accountKey) {
     return null;
   }
 
-  try {
-    return await window.accountStore.getAccount(accountKey);
-  } catch (error) {
-    console.warn('Supabase konnte beim Laden nicht erreicht werden.', error);
-    return null;
-  }
+  return window.accountStore.getAccount(accountKey);
 };
 
 const loadRemoteAccountsByIdentity = async (name, clan) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !name || !clan) {
     return [];
   }
 
-  try {
-    return await window.accountStore.findAccountsByIdentity(name, clan);
-  } catch (error) {
-    console.warn('Supabase konnte passende Accounts nicht laden.', error);
-    return [];
-  }
+  return window.accountStore.findAccountsByIdentity(name, clan);
 };
 
 const saveRemoteAccount = async (accountKey, account) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !accountKey) {
     return;
   }
 
-  try {
-    await window.accountStore.saveAccount(accountKey, account);
-  } catch (error) {
-    console.warn('Supabase konnte beim Speichern nicht erreicht werden.', error);
-  }
+  await window.accountStore.saveAccount(accountKey, account);
 };
 
 const deleteRemoteAccount = async (accountKey) => {
-  if (!window.accountStore?.enabled) {
+  if (!window.accountStore?.enabled || !accountKey) {
     return;
   }
 
-  try {
-    await window.accountStore.deleteAccount(accountKey);
-  } catch (error) {
-    console.warn('Supabase konnte einen alten Account nicht löschen.', error);
-  }
+  await window.accountStore.deleteAccount(accountKey);
 };
-
-const findLocalAccountsByIdentity = (accounts, name, clan) => Object.entries(accounts)
-  .filter(([, account]) => normalizeValue(account.name) === normalizeValue(name)
-    && normalizeValue(account.clan) === normalizeValue(clan))
-  .map(([accountKey, account]) => ({ ...account, accountKey }));
 
 loginForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -95,55 +63,70 @@ loginForm?.addEventListener('submit', async (event) => {
     return;
   }
 
-  const accounts = loadAccounts();
-  const legacyAccountKey = buildLegacyAccountKey(name, clan);
-  const newAccountKey = buildAccountKey(name, clan, personalPassword);
-  const localMatches = findLocalAccountsByIdentity(accounts, name, clan);
-  const remoteMatches = await loadRemoteAccountsByIdentity(name, clan);
-  const existingAccountMatch = [...remoteMatches, ...localMatches]
-    .find((account) => account.personalPassword === personalPassword);
-  const conflictingAccount = [...remoteMatches, ...localMatches]
-    .find((account) => account.personalPassword !== personalPassword);
+  if (!window.accountStore?.enabled) {
+    const reason = window.accountStore?.reason;
 
-  if (!existingAccountMatch && conflictingAccount) {
-    loginMessage.textContent = 'Für diesen Namen in diesem Clan existiert schon ein anderes eigenes Passwort.';
+    if (reason === 'missing_config') {
+      loginMessage.textContent = 'Supabase-Konfiguration fehlt. Bitte `supabase-config.js` ausfüllen.';
+    } else if (reason === 'missing_library') {
+      loginMessage.textContent = 'Supabase-Bibliothek konnte nicht geladen werden. Bitte Internet/CDN prüfen.';
+    } else {
+      loginMessage.textContent = 'Supabase ist nicht verbunden. Bitte `supabase-config.js` prüfen.';
+    }
+
     loginMessage.className = 'message error';
     return;
   }
 
-  const legacyRemoteAccount = existingAccountMatch ? null : await loadRemoteAccount(legacyAccountKey);
-  const legacyLocalAccount = existingAccountMatch ? null : accounts[legacyAccountKey];
-  const existingAccount = existingAccountMatch ?? legacyRemoteAccount ?? legacyLocalAccount ?? {
-    name,
-    clan,
-    points: 0,
-    lastSolvedDate: null,
-    personalPassword,
-  };
+  try {
+    const legacyAccountKey = buildLegacyAccountKey(name, clan);
+    const newAccountKey = buildAccountKey(name, clan, personalPassword);
+    const remoteMatches = await loadRemoteAccountsByIdentity(name, clan);
 
-  if (existingAccount.personalPassword && existingAccount.personalPassword !== personalPassword) {
-    loginMessage.textContent = 'Dein eigenes Zugangspasswort ist falsch.';
+    const existingAccountMatch = remoteMatches.find((account) => account.personalPassword === personalPassword);
+    const conflictingAccount = remoteMatches.find((account) => account.personalPassword !== personalPassword);
+
+    if (!existingAccountMatch && conflictingAccount) {
+      loginMessage.textContent = 'Für diesen Namen in diesem Clan existiert schon ein anderes eigenes Passwort.';
+      loginMessage.className = 'message error';
+      return;
+    }
+
+    const currentAccountByKey = await loadRemoteAccount(newAccountKey);
+    const legacyRemoteAccount = existingAccountMatch ? null : await loadRemoteAccount(legacyAccountKey);
+
+    const existingAccount = existingAccountMatch ?? currentAccountByKey ?? legacyRemoteAccount ?? {
+      name,
+      clan,
+      points: 0,
+      lastSolvedDate: null,
+      personalPassword,
+    };
+
+    if (existingAccount.personalPassword && existingAccount.personalPassword !== personalPassword) {
+      loginMessage.textContent = 'Dein eigenes Zugangspasswort ist falsch.';
+      loginMessage.className = 'message error';
+      return;
+    }
+
+    const previousAccountKey = existingAccount.accountKey ?? (legacyRemoteAccount ? legacyAccountKey : null);
+
+    existingAccount.name = name;
+    existingAccount.clan = clan;
+    existingAccount.personalPassword = personalPassword;
+    existingAccount.accountKey = newAccountKey;
+
+    if (previousAccountKey && previousAccountKey !== newAccountKey) {
+      await deleteRemoteAccount(previousAccountKey);
+    }
+
+    await saveRemoteAccount(newAccountKey, existingAccount);
+
+    sessionStorage.setItem('activeAccountKey', newAccountKey);
+    window.location.href = 'dashboard.html';
+  } catch (error) {
+    console.error('Login/Speichern über Supabase fehlgeschlagen.', error);
+    loginMessage.textContent = 'Supabase ist gerade nicht erreichbar. Bitte später erneut versuchen.';
     loginMessage.className = 'message error';
-    return;
   }
-
-  const previousAccountKey = existingAccount.accountKey ?? (legacyLocalAccount ? legacyAccountKey : null);
-
-  existingAccount.name = name;
-  existingAccount.clan = clan;
-  existingAccount.personalPassword = personalPassword;
-  existingAccount.accountKey = newAccountKey;
-
-  if (previousAccountKey && previousAccountKey !== newAccountKey) {
-    delete accounts[previousAccountKey];
-    await deleteRemoteAccount(previousAccountKey);
-  }
-
-  accounts[newAccountKey] = existingAccount;
-
-  saveAccounts(accounts);
-  await saveRemoteAccount(newAccountKey, existingAccount);
-
-  sessionStorage.setItem('activeAccountKey', newAccountKey);
-  window.location.href = 'dashboard.html';
 });
