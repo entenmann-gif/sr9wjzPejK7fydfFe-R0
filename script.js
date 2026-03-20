@@ -19,10 +19,11 @@ loginForm?.addEventListener('submit', (event) => {
 
   const name = document.getElementById('name').value.trim();
   const password = document.getElementById('password').value.trim();
+  const personalPassword = document.getElementById('personal-password').value.trim();
   const clan = CLAN_PASSWORDS[password];
 
-  if (!name || !clan) {
-    loginMessage.textContent = 'Name oder Passwort ist falsch. Ohne gültiges Clan-Passwort kommst du nicht rein.';
+  if (!name || !clan || !personalPassword) {
+    loginMessage.textContent = 'Name, Clan-Passwort oder eigenes Passwort ist falsch bzw. fehlt.';
     loginMessage.className = 'message error';
     return;
   }
@@ -34,10 +35,18 @@ loginForm?.addEventListener('submit', (event) => {
     clan,
     points: 0,
     lastSolvedDate: null,
+    personalPassword,
   };
+
+  if (existingAccount.personalPassword && existingAccount.personalPassword !== personalPassword) {
+    loginMessage.textContent = 'Dein eigenes Zugangspasswort ist falsch.';
+    loginMessage.className = 'message error';
+    return;
+  }
 
   existingAccount.name = name;
   existingAccount.clan = clan;
+  existingAccount.personalPassword = personalPassword;
   accounts[accountKey] = existingAccount;
   saveAccounts(accounts);
 

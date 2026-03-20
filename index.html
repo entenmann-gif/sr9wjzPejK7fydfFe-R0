@@ -12,7 +12,7 @@
         <p class="eyebrow">Clan Zugang</p>
         <h1>Willkommen beim Daily Riddle</h1>
         <p class="intro">
-          Gib deinen Namen und das Clan-Passwort ein. Mit dem richtigen Passwort wirst du automatisch dem passenden Clan zugeordnet.
+          Gib deinen Namen und das Clan-Passwort ein. Zusätzlich legst du dein eigenes Zugangspasswort fest, das du beim nächsten Login wieder eingeben musst.
         </p>
 
         <form id="login-form" class="form">
@@ -22,8 +22,13 @@
           </label>
 
           <label class="field">
-            <span>Passwort</span>
+            <span>Clan-Passwort</span>
             <input id="password" name="password" type="password" placeholder="Clan Passwort" required />
+          </label>
+
+          <label class="field">
+            <span>Eigenes Zugangspasswort</span>
+            <input id="personal-password" name="personalPassword" type="password" placeholder="Eigenes Passwort" required />
           </label>
 
           <button type="submit" class="button">Clan betreten</button>
