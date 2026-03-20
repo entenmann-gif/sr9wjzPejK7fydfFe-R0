@@ -38,3 +38,4 @@ create table if not exists public.daily_riddle_accounts (
 3. Optional: Für öffentlichen Zugriff passende RLS-Policies konfigurieren (oder in einem geschützten Setup arbeiten).
 
 Wenn keine Supabase-Daten eingetragen sind, läuft die App automatisch nur mit Local Storage.
+Dann sieht jede Person nur die Accounts, die auf dem eigenen Gerät gespeichert wurden. Damit alle im Clan dieselbe Mitgliederliste sehen, müssen `SUPABASE_URL` und `SUPABASE_ANON_KEY` in `supabase-config.js` gesetzt sein.

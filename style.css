@@ -29,7 +29,8 @@ main {
 }
 
 .auth-page,
-.dashboard-page {
+.dashboard-page,
+.clan-page {
   display: grid;
   gap: 24px;
   padding: 32px;
@@ -44,6 +45,10 @@ main {
   align-items: start;
 }
 
+.clan-page {
+  place-items: center;
+}
+
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -54,12 +59,18 @@ main {
 
 .auth-card,
 .riddle-card,
-.account-panel {
+.account-panel,
+.clan-card {
   padding: 32px;
 }
 
 .auth-card {
   max-width: 520px;
+}
+
+.clan-card {
+  max-width: 720px;
+  width: 100%;
 }
 
 .eyebrow {
@@ -72,6 +83,7 @@ main {
 
 h1,
 h2,
+h3,
 p {
   margin-top: 0;
 }
@@ -146,6 +158,25 @@ input:focus {
   color: #86efac;
 }
 
+.sync-status {
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.75);
+  line-height: 1.5;
+}
+
+.sync-status.warning {
+  color: #fde68a;
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+.sync-status.success {
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
 .riddle-box {
   margin-top: 24px;
   padding: 24px;
@@ -171,7 +202,8 @@ input:focus {
   margin: 24px 0 32px;
 }
 
-.account-list div {
+.account-list div,
+.clan-summary {
   padding: 16px;
   border-radius: 18px;
   background: rgba(15, 23, 42, 0.75);
@@ -185,6 +217,65 @@ input:focus {
 .account-list dd {
   margin: 0;
   font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.clan-link,
+.back-link {
+  color: #86efac;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.clan-link:hover,
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.clan-overview {
+  margin: 24px 0;
+}
+
+.clan-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.clan-summary span {
+  color: var(--muted);
+}
+
+.clan-summary strong {
+  font-size: 1.4rem;
+}
+
+.clan-members-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.clan-member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.clan-member-name {
+  font-weight: 700;
+}
+
+.clan-member-points {
+  color: var(--muted);
   font-weight: 700;
 }
 
