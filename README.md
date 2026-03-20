@@ -35,6 +35,8 @@ create table if not exists public.daily_riddle_accounts (
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
 
+   Falls die Datei fehlt, kannst du sie aus `supabase-config.example.js` erstellen.
+
 3. Optional: Für öffentlichen Zugriff passende RLS-Policies konfigurieren (oder in einem geschützten Setup arbeiten).
 
-Wenn keine Supabase-Daten eingetragen sind, läuft die App automatisch nur mit Local Storage.
+Ohne gültige Supabase-Daten ist kein Login möglich (kein Local-Storage-Fallback).
