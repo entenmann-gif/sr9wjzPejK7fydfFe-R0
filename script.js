@@ -2,6 +2,10 @@ const CLAN_PASSWORDS = {
   'dünnschiss': 'Chaos Crew',
   megaking: 'kings lobby',
   standartschiss: 'lila langweiler',
+  gryffindor: 'Hogwarts',
+  hufflepuff: 'Hogwarts',
+  ravenclaw: 'Hogwarts',
+  slytherin: 'Hogwarts',
 };
 
 const loginForm = document.getElementById('login-form');
