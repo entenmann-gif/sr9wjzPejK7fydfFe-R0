@@ -45,4 +45,4 @@ create table if not exists public.daily_riddle_accounts (
 
 3. Optional: Für öffentlichen Zugriff passende RLS-Policies konfigurieren (oder in einem geschützten Setup arbeiten).
 
-Wenn keine Supabase-Daten gesetzt sind, läuft die App automatisch nur mit Local Storage.
+Ohne gültige Supabase-Daten ist kein Login möglich (kein Local-Storage-Fallback).
