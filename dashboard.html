@@ -12,7 +12,7 @@
         <p class="eyebrow">Challenge des Tages</p>
         <h1>Daily Riddle</h1>
         <p class="riddle-copy">
-          Löse das Rätsel des Tages. Wenn deine Antwort richtig ist, bekommst du heute 100 Punkte.
+          Löse das Rätsel des Tages. Wenn deine Antwort richtig ist, bekommst du heute 100 R coin.
         </p>
 
         <div class="riddle-box">
@@ -38,10 +38,10 @@
             <dt>Clan</dt>
             <dd>
               <a id="account-clan-link" class="clan-link" href="clan.html">
-                <span id="account-clan"></span>
+                <span id="account-clan-name"></span>
               </a>
               <button
-                id="account-clan"
+                id="account-clan-button"
                 class="clan-trigger"
                 type="button"
                 aria-expanded="false"
@@ -50,7 +50,7 @@
             </dd>
           </div>
           <div>
-            <dt>Punkte</dt>
+            <dt>R coin</dt>
             <dd id="account-points"></dd>
           </div>
         </dl>
@@ -63,7 +63,37 @@
           <ul id="clan-members-list" class="clan-members-list"></ul>
         </section>
 
-        <button id="logout-button" class="button secondary-button" type="button">Abmelden</button>
+        <div class="account-actions">
+          <button id="marketplace-button" class="button secondary-button" type="button">R coin Tauschhaus</button>
+          <button id="logout-button" class="button secondary-button" type="button">Abmelden</button>
+        </div>
+
+        <section id="marketplace-panel" class="marketplace-panel" hidden>
+          <div class="marketplace-header">
+            <div>
+              <p class="eyebrow">Tauschhaus</p>
+              <h3>R coin Tauschhaus</h3>
+            </div>
+            <button id="marketplace-close-button" class="marketplace-close" type="button" aria-label="Tauschhaus schließen">×</button>
+          </div>
+
+          <p class="marketplace-copy">
+            Zutritt ab 700 R coin. Gekaufte Gegenstände verschwinden aus dem Tauschhaus, bis ein Spieler sie wieder verkauft.
+          </p>
+          <p id="marketplace-message" class="message" aria-live="polite"></p>
+
+          <div class="marketplace-columns">
+            <section class="marketplace-section">
+              <h4>Im Tauschhaus</h4>
+              <ul id="marketplace-listings" class="marketplace-list"></ul>
+            </section>
+
+            <section class="marketplace-section">
+              <h4>Deine Gegenstände</h4>
+              <ul id="owned-items-list" class="marketplace-list"></ul>
+            </section>
+          </div>
+        </section>
       </aside>
     </main>
 
