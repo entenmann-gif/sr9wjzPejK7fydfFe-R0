@@ -2,7 +2,6 @@ const ACTIVE_ACCOUNT_KEY = sessionStorage.getItem('activeAccountKey');
 const MARKETPLACE_ACCESS_MINIMUM = 700;
 const accountName = document.getElementById('account-name');
 const accountClanName = document.getElementById('account-clan-name');
-const accountClanButton = document.getElementById('account-clan-button');
 const accountPoints = document.getElementById('account-points');
 const riddleQuestion = document.getElementById('riddle-question');
 const riddleForm = document.getElementById('riddle-form');
@@ -15,9 +14,6 @@ const marketplaceCloseButton = document.getElementById('marketplace-close-button
 const marketplaceMessage = document.getElementById('marketplace-message');
 const marketplaceListings = document.getElementById('marketplace-listings');
 const ownedItemsList = document.getElementById('owned-items-list');
-const clanMembersPanel = document.getElementById('clan-members-panel');
-const clanMembersList = document.getElementById('clan-members-list');
-const clanMembersCount = document.getElementById('clan-members-count');
 
 const normalizeValue = (value) => value.trim().toLowerCase();
 const formatCoins = (value) => `${value ?? 0} R coin`;
@@ -28,14 +24,6 @@ const loadRemoteAccount = async (accountKey) => {
   }
 
   return window.accountStore.getAccount(accountKey);
-};
-
-const loadRemoteAccountsByClan = async (clan) => {
-  if (!window.accountStore?.enabled || !clan) {
-    return [];
-  }
-
-  return window.accountStore.findAccountsByClan(clan);
 };
 
 const saveRemoteAccount = async (accountKey, account) => {
@@ -57,61 +45,6 @@ const DAILY_RIDDLE = {
 
 let activeAccount = null;
 let marketplaceState = [];
-
-const mergeClanMembers = (members) => {
-  const merged = new Map();
-
-  members.forEach((member) => {
-    const memberKey = member.accountKey ?? `${normalizeValue(member.name)}::${normalizeValue(member.clan)}`;
-    const existingMember = merged.get(memberKey);
-
-    if (!existingMember || (member.points ?? 0) >= (existingMember.points ?? 0)) {
-      merged.set(memberKey, member);
-    }
-  });
-
-  return [...merged.values()].sort((left, right) => {
-    if ((right.points ?? 0) !== (left.points ?? 0)) {
-      return (right.points ?? 0) - (left.points ?? 0);
-    }
-
-    return left.name.localeCompare(right.name, 'de');
-  });
-};
-
-const renderClanMembers = (members) => {
-  clanMembersList.innerHTML = '';
-  clanMembersCount.textContent = `${members.length} Mitglied${members.length === 1 ? '' : 'er'}`;
-
-  members.forEach((member) => {
-    const item = document.createElement('li');
-    item.className = 'clan-member-item';
-
-    const name = document.createElement('span');
-    name.className = 'clan-member-name';
-    name.textContent = member.name;
-
-    const points = document.createElement('span');
-    points.className = 'clan-member-points';
-    points.textContent = formatCoins(member.points);
-
-    if (member.accountKey === ACTIVE_ACCOUNT_KEY) {
-      const youBadge = document.createElement('span');
-      youBadge.className = 'clan-member-badge';
-      youBadge.textContent = 'Du';
-      name.appendChild(youBadge);
-    }
-
-    item.append(name, points);
-    clanMembersList.appendChild(item);
-  });
-};
-
-const updateClanMembers = async () => {
-  const remoteMembers = await loadRemoteAccountsByClan(activeAccount.clan);
-  const clanMembers = mergeClanMembers([...remoteMembers, activeAccount]);
-  renderClanMembers(clanMembers);
-};
 
 const renderAccount = () => {
   accountName.textContent = activeAccount.name;
@@ -253,7 +186,6 @@ const buyMarketplaceItem = async (itemKey) => {
 
     await window.accountStore.saveMarketplaceListing(updatedListing);
     renderAccount();
-    await updateClanMembers();
     await refreshMarketplace();
 
     setMarketplaceMessage(
@@ -347,7 +279,6 @@ const initializeDashboard = async () => {
 
     activeAccount = { ...remoteAccount, accountKey: ACTIVE_ACCOUNT_KEY };
     renderAccount();
-    await updateClanMembers();
   } catch (error) {
     console.error('Dashboard konnte Supabase-Daten nicht laden.', error);
     window.location.href = 'index.html';
@@ -355,22 +286,6 @@ const initializeDashboard = async () => {
 };
 
 void initializeDashboard();
-
-accountClanButton?.addEventListener('click', async () => {
-  if (!activeAccount) {
-    return;
-  }
-
-  const isExpanded = accountClanButton.getAttribute('aria-expanded') === 'true';
-  const nextExpanded = !isExpanded;
-
-  accountClanButton.setAttribute('aria-expanded', String(nextExpanded));
-  clanMembersPanel.hidden = !nextExpanded;
-
-  if (nextExpanded) {
-    await updateClanMembers();
-  }
-});
 
 marketplaceButton?.addEventListener('click', () => {
   void openMarketplace();
@@ -405,7 +320,6 @@ riddleForm?.addEventListener('submit', async (event) => {
   try {
     await saveRemoteAccount(ACTIVE_ACCOUNT_KEY, activeAccount);
     renderAccount();
-    await updateClanMembers();
 
     riddleMessage.textContent = `Richtig! Du bekommst ${DAILY_RIDDLE.rewardPoints} R coin für das heutige Rätsel.`;
     riddleMessage.className = 'message success';
