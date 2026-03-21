@@ -115,6 +115,7 @@ const updateClanMembers = async () => {
 const renderAccount = () => {
   accountName.textContent = activeAccount.name;
   accountClanName.textContent = activeAccount.clan;
+  accountPoints.textContent = formatCoins(activeAccount.points);
   accountClanButton.textContent = activeAccount.clan;
   accountPoints.textContent = `${activeAccount.points ?? 0}`;
   riddleQuestion.textContent = DAILY_RIDDLE.question;
