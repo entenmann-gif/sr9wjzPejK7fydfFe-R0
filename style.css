@@ -184,6 +184,10 @@ input:focus {
   gap: 12px;
 }
 
+.account-action-message {
+  margin-top: 12px;
+}
+
 .marketplace-panel {
   margin-top: 24px;
   padding: 20px;
