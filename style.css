@@ -184,6 +184,10 @@ input:focus {
   gap: 12px;
 }
 
+.account-action-message {
+  margin-top: 12px;
+}
+
 .marketplace-panel {
   margin-top: 24px;
   padding: 20px;
@@ -296,9 +300,48 @@ input:focus {
   font-weight: 700;
 }
 
+.clan-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .clan-link {
   color: inherit;
   text-decoration: none;
+}
+
+.clan-link:hover,
+.clan-link:focus-visible {
+  text-decoration: underline;
+}
+
+.clan-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(134, 239, 172, 0.35);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.65);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clan-trigger::after {
+  content: '▾';
+  color: #86efac;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.clan-trigger[aria-expanded='true']::after {
+  transform: rotate(180deg);
 }
 
 .clan-link:hover,

@@ -9,6 +9,7 @@ const riddleMessage = document.getElementById('riddle-message');
 const logoutButton = document.getElementById('logout-button');
 const marketplaceButton = document.getElementById('marketplace-button');
 const marketplacePanel = document.getElementById('marketplace-panel');
+const marketplaceAccessMessage = document.getElementById('marketplace-access-message');
 const marketplaceCloseButton = document.getElementById('marketplace-close-button');
 const marketplaceMessage = document.getElementById('marketplace-message');
 const marketplaceListings = document.getElementById('marketplace-listings');
@@ -49,6 +50,8 @@ const renderAccount = () => {
   accountName.textContent = activeAccount.name;
   accountClanName.textContent = activeAccount.clan;
   accountPoints.textContent = formatCoins(activeAccount.points);
+  accountClanButton.textContent = activeAccount.clan;
+  accountPoints.textContent = `${activeAccount.points ?? 0}`;
   riddleQuestion.textContent = DAILY_RIDDLE.question;
 };
 
@@ -134,6 +137,11 @@ const refreshMarketplace = async () => {
 const setMarketplaceMessage = (text, type) => {
   marketplaceMessage.textContent = text;
   marketplaceMessage.className = `message ${type}`;
+};
+
+const setMarketplaceAccessMessage = (text = '', type = '') => {
+  marketplaceAccessMessage.textContent = text;
+  marketplaceAccessMessage.className = type ? `message account-action-message ${type}` : 'message account-action-message';
 };
 
 const buyMarketplaceItem = async (itemKey) => {
@@ -228,11 +236,14 @@ const openMarketplace = async () => {
 
   if ((activeAccount.points ?? 0) < MARKETPLACE_ACCESS_MINIMUM) {
     marketplacePanel.hidden = true;
-    riddleMessage.textContent = `Du brauchst mindestens ${formatCoins(MARKETPLACE_ACCESS_MINIMUM)}, um das Tauschhaus zu betreten.`;
-    riddleMessage.className = 'message error';
+    setMarketplaceAccessMessage(
+      `Du brauchst mindestens ${formatCoins(MARKETPLACE_ACCESS_MINIMUM)}, um das Tauschhaus zu betreten.`,
+      'error',
+    );
     return;
   }
 
+  setMarketplaceAccessMessage();
   marketplacePanel.hidden = false;
 
   try {
@@ -246,6 +257,7 @@ const openMarketplace = async () => {
 
 const closeMarketplace = () => {
   marketplacePanel.hidden = true;
+  setMarketplaceAccessMessage();
   marketplaceMessage.textContent = '';
   marketplaceMessage.className = 'message';
 };
