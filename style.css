@@ -296,56 +296,14 @@ input:focus {
   font-weight: 700;
 }
 
-.clan-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
+.clan-link {
   color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  text-decoration: none;
 }
 
-.clan-trigger::after {
-  content: '▾';
-  color: #86efac;
-  font-size: 1rem;
-  transition: transform 0.2s ease;
-}
-
-.clan-trigger[aria-expanded='true']::after {
-  transform: rotate(180deg);
-}
-
-.clan-members-panel {
-  margin: -12px 0 24px;
-  padding: 18px;
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid var(--border);
-}
-
-.clan-members-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.clan-members-header h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.clan-members-count {
-  color: var(--muted);
-  font-size: 0.95rem;
+.clan-link:hover,
+.clan-link:focus-visible {
+  text-decoration: underline;
 }
 
 .clan-members-list {
