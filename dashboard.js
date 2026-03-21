@@ -9,6 +9,7 @@ const riddleMessage = document.getElementById('riddle-message');
 const logoutButton = document.getElementById('logout-button');
 const marketplaceButton = document.getElementById('marketplace-button');
 const marketplacePanel = document.getElementById('marketplace-panel');
+const accountClanButton = document.getElementById('account-clan-button');
 const marketplaceAccessMessage = document.getElementById('marketplace-access-message');
 const marketplaceCloseButton = document.getElementById('marketplace-close-button');
 const marketplaceMessage = document.getElementById('marketplace-message');
@@ -49,8 +50,11 @@ let marketplaceState = [];
 const renderAccount = () => {
   accountName.textContent = activeAccount.name;
   accountClanName.textContent = activeAccount.clan;
-  accountPoints.textContent = formatCoins(activeAccount.points);
-  accountClanButton.textContent = activeAccount.clan;
+
+  if (accountClanButton) {
+    accountClanButton.textContent = activeAccount.clan;
+  }
+
   accountPoints.textContent = `${activeAccount.points ?? 0}`;
   riddleQuestion.textContent = DAILY_RIDDLE.question;
 };
