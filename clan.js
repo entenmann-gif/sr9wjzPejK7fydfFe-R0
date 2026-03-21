@@ -57,7 +57,7 @@ const renderClanMembers = (members) => {
 
     const points = document.createElement('span');
     points.className = 'clan-member-points';
-    points.textContent = `${member.points ?? 0} Punkte`;
+    points.textContent = `${member.points ?? 0} R coin`;
 
     item.append(name, points);
     clanMembersList.appendChild(item);

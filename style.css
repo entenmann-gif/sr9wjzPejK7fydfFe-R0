@@ -177,6 +177,101 @@ input:focus {
   top: 32px;
 }
 
+
+.account-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.marketplace-panel {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid var(--border);
+}
+
+.marketplace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.marketplace-header h3,
+.marketplace-section h4 {
+  margin-bottom: 0;
+}
+
+.marketplace-close {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.marketplace-copy {
+  margin: 16px 0 12px;
+}
+
+.marketplace-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.marketplace-section {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.marketplace-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.marketplace-item,
+.marketplace-empty {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.marketplace-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.marketplace-item-info {
+  display: grid;
+  gap: 6px;
+}
+
+.marketplace-item-info span,
+.marketplace-empty {
+  color: var(--muted);
+}
+
+.marketplace-action {
+  min-width: 140px;
+}
+
+.marketplace-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .account-list {
   display: grid;
   gap: 18px;
@@ -301,4 +396,15 @@ input:focus {
   .account-panel {
     position: static;
   }
+
+  .marketplace-columns,
+  .account-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplace-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
+

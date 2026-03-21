@@ -8,7 +8,7 @@ Eine kleine statische Website mit Startscreen, Clan-Passwort-Login und Daily-Rid
 2. Einen Namen eingeben.
 3. Eines der Clan-Passwörter verwenden, um dem passenden Clan beizutreten 
 4. Ein eigenes Zugangspasswort festlegen (bei späteren Logins muss es wieder eingegeben werden).
-5. Auf dem Dashboard das tägliche Rätsel lösen und einmal pro Tag 100 Punkte erhalten.
+5. Auf dem Dashboard das tägliche Rätsel lösen und einmal pro Tag 100 R coin erhalten.
 
 ## Supabase aktivieren
 
@@ -25,10 +25,24 @@ create table if not exists public.daily_riddle_accounts (
   account_key text primary key,
   name text not null,
   clan text not null,
-  points integer not null default 0,
+  points integer not null default 0, -- wird im UI als R coin angezeigt
   last_solved_date text,
   personal_password text not null,
   updated_at timestamptz not null default now()
+);
+```
+
+Zusätzlich für das R coin Tauschhaus diese Tabelle anlegen:
+
+```sql
+create table if not exists public.daily_riddle_marketplace (
+  item_key text primary key,
+  item_name text not null,
+  default_price integer not null,
+  price integer not null,
+  owner_account_key text,
+  owner_name text,
+  is_listed boolean not null default true
 );
 ```
 
