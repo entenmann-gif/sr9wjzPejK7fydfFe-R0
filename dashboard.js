@@ -116,7 +116,7 @@ const renderAccount = () => {
   accountName.textContent = activeAccount.name;
   accountClanName.textContent = activeAccount.clan;
   accountClanButton.textContent = activeAccount.clan;
-  accountPoints.textContent = formatCoins(activeAccount.points);
+  accountPoints.textContent = `${activeAccount.points ?? 0}`;
   riddleQuestion.textContent = DAILY_RIDDLE.question;
 };
 
