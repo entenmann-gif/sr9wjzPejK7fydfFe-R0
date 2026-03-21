@@ -39,8 +39,8 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 
 // HIER KANNST DU DAS RÄTSEL UND DIE LÖSUNG IM CODE ÄNDERN.
 const DAILY_RIDDLE = {
-  question: 'was ist au 79?',
-  answer: 'gold',
+  question: 'Wie viele ausgänge hat der kleinste Microkontroller',
+  answer: '8',
   rewardPoints: 100,
 };
 
