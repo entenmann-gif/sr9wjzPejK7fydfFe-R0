@@ -39,8 +39,8 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 
 // HIER KANNST DU DAS RÄTSEL UND DIE LÖSUNG IM CODE ÄNDERN.
 const DAILY_RIDDLE = {
-  question: 'Wie viele Ausgänge hat der kleinste Microkontroller der Welt',
-  answer: '8',
+  question: 'https://wordlegame.org?challenge=dmlsbGFnZXI',
+  answer: 'Villager',
   rewardPoints: 100,
 };
 
